@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function, unicode_literals
 import sys
 import os.path
 
 try:
     from settings_local import *
 except ImportError:
-    print "Don't forget create settings_local.py"
+    print("Don't forget create settings_local.py")
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -55,8 +56,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'app',
-    'south',
     'yandex_money',
+)
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 YANDEX_MONEY_SCID = 123

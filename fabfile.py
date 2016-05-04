@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function, unicode_literals
 import re
 import subprocess
 from fabric.api import *
@@ -27,7 +28,7 @@ def get_last_version_from_tags():
 @task
 def inc_version():
     if 'nothing to commit' not in subprocess.check_output(["git", "status"]):
-        print 'Error: You must commit current changes first'
+        print('Error: You must commit current changes first')
         return
 
     last_version = get_last_version_from_tags()
@@ -39,7 +40,7 @@ def inc_version():
     last_version = '.'.join(map(str, last_version))
     new_version = '.'.join(map(str, new_version))
 
-    print 'Upgrading from %s to %s' % (last_version, new_version)
+    print('Upgrading from %s to %s' % (last_version, new_version))
 
     version_line_re = re.compile(r'''(__version__ =)(\s*['"]\d+\.\d+\.\d+["'])''', flags=re.M)
     with open('setup.py', 'w') as f:
@@ -48,4 +49,4 @@ def inc_version():
     subprocess.check_output(["git", 'commit', '-m', '"version %s"' % new_version, '-a'])
     subprocess.check_output(["git", 'tag', '%s' % new_version])
 
-    print '\nVersion %s created. Push it to origin with "git push --tags"' % new_version
+    print('\nVersion %s created. Push it to origin with "git push --tags"' % new_version)

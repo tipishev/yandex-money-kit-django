@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 from hashlib import md5
 from django import forms
 from django.conf import settings
@@ -38,8 +40,8 @@ class BasePaymentForm(forms.Form):
         BAD_SHOP_ID = 1
 
     error_messages = {
-        ERROR_MESSAGE_CODES.BAD_SCID: u'scid не совпадает с YANDEX_MONEY_SCID',
-        ERROR_MESSAGE_CODES.BAD_SHOP_ID: u'scid не совпадает с YANDEX_MONEY_SHOP_ID'
+        ERROR_MESSAGE_CODES.BAD_SCID: 'scid не совпадает с YANDEX_MONEY_SCID',
+        ERROR_MESSAGE_CODES.BAD_SHOP_ID: 'shop_id не совпадает с YANDEX_MONEY_SHOP_ID'
     }
 
     class ACTION:
@@ -47,15 +49,15 @@ class BasePaymentForm(forms.Form):
         CPAYMENT = 'paymentAviso'
 
         CHOICES = (
-            (CHECK, u'Проверка заказа'),
-            (CPAYMENT, u'Уведомления о переводе'),
+            (CHECK, 'Проверка заказа'),
+            (CPAYMENT, 'Уведомления о переводе'),
         )
 
     shopId = forms.IntegerField(initial=settings.YANDEX_MONEY_SHOP_ID)
     scid = forms.IntegerField(initial=settings.YANDEX_MONEY_SCID)
     orderNumber = forms.CharField(min_length=1, max_length=64)
     customerNumber = forms.CharField(min_length=1, max_length=64)
-    paymentType = forms.CharField(label=u'Способ оплаты',
+    paymentType = forms.CharField(label='Способ оплаты',
                                   widget=forms.Select(choices=Payment.PAYMENT_TYPE.CHOICES),
                                   min_length=2, max_length=2,
                                   initial=Payment.PAYMENT_TYPE.PC)
