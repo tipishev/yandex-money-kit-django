@@ -88,7 +88,7 @@ class BasePaymentForm(forms.Form):
             cd['invoiceId'],
             cd['customerNumber'],
             settings.YANDEX_MONEY_SHOP_PASSWORD,
-        )))).hexdigest().upper()
+        ))).encode()).hexdigest().upper()
 
     @classmethod
     def check_md5(cls, cd):

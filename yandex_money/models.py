@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import models
+from django.utils.six import python_2_unicode_compatible
 
 from .signals import payment_process
 from .signals import payment_completed
@@ -15,6 +16,7 @@ def uuid4_replaced():
     return str(uuid4()).replace('-', '')
 
 
+@python_2_unicode_compatible
 class Payment(models.Model):
     class STATUS:
         PROCESSED = 'processed'
@@ -70,9 +72,9 @@ class Payment(models.Model):
 
     # Required request fields
     shop_id = models.PositiveIntegerField(
-        'ID магазина', default=settings.YANDEX_MONEY_SHOP_ID)
+        'ID магазина', default=0)
     scid = models.PositiveIntegerField(
-        'Номер витрины', default=settings.YANDEX_MONEY_SCID)
+        'Номер витрины', default=0)
     customer_number = models.CharField(
         'Идентификатор плательщика', max_length=64,
         default=uuid4_replaced)
@@ -93,9 +95,9 @@ class Payment(models.Model):
     cps_phone = models.CharField(
         'Телефон плательщика', max_length=15, blank=True, null=True)
     success_url = models.URLField(
-        'URL успешной оплаты', default=settings.YANDEX_MONEY_SUCCESS_URL)
+        'URL успешной оплаты', default='')
     fail_url = models.URLField(
-        'URL неуспешной оплаты', default=settings.YANDEX_MONEY_FAIL_URL)
+        'URL неуспешной оплаты', default='')
 
     # Transaction info
     status = models.CharField(
@@ -121,9 +123,24 @@ class Payment(models.Model):
     def send_signals(self):
         status = self.status
         if status == self.STATUS.PROCESSED:
-            payment_process.send(sender=self)
+            payment_process.send(sender=self.__class__, instance=self)
         if status == self.STATUS.SUCCESS:
-            payment_completed.send(sender=self)
+            payment_completed.send(sender=self.__class__, instance=self)
+
+    def save(self, *args, **kwargs):
+        if not self.shop_id:
+            self.shop_id = settings.YANDEX_MONEY_SHOP_ID
+        if not self.scid:
+            self.shop_id = settings.YANDEX_MONEY_SCID
+        if not self.success_url:
+            self.success_url = settings.YANDEX_MONEY_SUCCESS_URL
+        if not self.fail_url:
+            self.fail_url = settings.YANDEX_MONEY_FAIL_URL
+        if not self.order_number:
+            self.order_number = uuid4_replaced()
+        if not self.customer_number:
+            self.customer_number = uuid4_replaced()
+        super(Payment, self).save(*args, **kwargs)
 
     @classmethod
     def get_used_shop_ids(cls):
@@ -142,6 +159,6 @@ class Payment(models.Model):
         verbose_name_plural = 'платежи'
         app_label = 'yandex_money'
 
-    def __unicode__(self):
+    def __str__(self):
         return '[Payment id={}, order_number={}, payment_type={}, status={}]'.format(
             self.id, self.order_number, self.payment_type, self.status)
