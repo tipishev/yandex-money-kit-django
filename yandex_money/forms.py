@@ -53,8 +53,8 @@ class BasePaymentForm(forms.Form):
             (CPAYMENT, 'Уведомления о переводе'),
         )
 
-    shopId = forms.IntegerField(initial=settings.YANDEX_MONEY_SHOP_ID)
-    scid = forms.IntegerField(initial=settings.YANDEX_MONEY_SCID)
+    shopId = forms.IntegerField()
+    scid = forms.IntegerField()
     orderNumber = forms.CharField(min_length=1, max_length=64)
     customerNumber = forms.CharField(min_length=1, max_length=64)
     paymentType = forms.CharField(label='Способ оплаты',
@@ -68,6 +68,9 @@ class BasePaymentForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(BasePaymentForm, self).__init__(*args, **kwargs)
+
+        self.fields['shopId'].initial = settings.YANDEX_MONEY_SHOP_ID
+        self.fields['scid'].initial = settings.YANDEX_MONEY_SCID
         if hasattr(settings, 'YANDEX_ALLOWED_PAYMENT_TYPES'):
             allowed_payment_types = settings.YANDEX_ALLOWED_PAYMENT_TYPES
             self.fields['paymentType'].widget.choices = filter(
@@ -120,12 +123,15 @@ class PaymentForm(BasePaymentForm):
     cps_phone = forms.CharField(label='Телефон',
                                 max_length=15, required=False)
 
-    shopFailURL = forms.URLField(initial=settings.YANDEX_MONEY_FAIL_URL)
-    shopSuccessURL = forms.URLField(initial=settings.YANDEX_MONEY_SUCCESS_URL)
+    shopFailURL = forms.URLField()
+    shopSuccessURL = forms.URLField()
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.pop('instance')
         super(PaymentForm, self).__init__(*args, **kwargs)
+
+        self.fields['shopFailURL'].initial = settings.YANDEX_MONEY_FAIL_URL
+        self.fields['shopSuccessURL'].initial = settings.YANDEX_MONEY_SUCCESS_URL
 
         self.fields.pop('md5')
         self.fields.pop('action')
