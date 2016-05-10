@@ -38,6 +38,7 @@ class BaseView(View):
         return super(BaseView, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        logger.debug('POST data: %s' % (str(request.POST), ))
         form = self.form_class(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
@@ -59,7 +60,11 @@ class BaseView(View):
         else:
             params = {'code': '200'}
 
-        self.logging(request, params)
+        logger.debug('PARAMS: %s' % (str(params), ))
+        logger.info('Action %s has code %s for customerNumber "%s"' % (
+            request.POST.get('action', ''), params['code'],
+            request.POST.get('customerNumber', '')))
+
         content = self.get_xml(params)
 
         if (
@@ -109,12 +114,6 @@ class BaseView(View):
 
     def get_xml_element(self, **params):
         raise NotImplementedError()
-
-    def logging(self, request, params):
-        message = 'Action %s has code %s for customerNumber "%s"' % (
-            request.POST.get('action', ''), params['code'],
-            request.POST.get('customerNumber', ''))
-        logger.info(message)
 
 
 class CheckOrderFormView(BaseView):
