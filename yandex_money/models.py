@@ -131,7 +131,7 @@ class Payment(models.Model):
         if not self.shop_id:
             self.shop_id = settings.YANDEX_MONEY_SHOP_ID
         if not self.scid:
-            self.shop_id = settings.YANDEX_MONEY_SCID
+            self.scid = settings.YANDEX_MONEY_SCID
         if not self.success_url:
             self.success_url = settings.YANDEX_MONEY_SUCCESS_URL
         if not self.fail_url:
