@@ -64,7 +64,7 @@
 
 
 ###Использование
-[Полный пример использования](<https://github.com/tipishev/django-yandex-money/tree/master/example>)
+[Полный пример использования](<https://github.com/tipishev/yandex-money-kit-django/tree/master/example>)
 
 * Представление платежной формы:
 ```
